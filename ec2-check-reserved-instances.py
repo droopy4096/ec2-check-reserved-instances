@@ -87,30 +87,6 @@ def main():
         AWS_SECRET_ACCESS_KEY = args.secret_key
         AWS_REGION = args.region
     
-###REFACTORED     if len(sys.argv) > 1:
-###REFACTORED         aws_config_file=sys.argv[1]
-###REFACTORED         import ConfigParser
-###REFACTORED         cp=ConfigParser.ConfigParser()
-###REFACTORED         cp.read(aws_config_file)
-###REFACTORED         aws_defaults=dict(cp.items('default'))
-###REFACTORED         # print aws_defaults
-###REFACTORED         AWS_ACCESS_KEY_ID=aws_defaults.get('aws_access_key_id')
-###REFACTORED         AWS_SECRET_ACCESS_KEY=aws_defaults.get('aws_secret_access_key')
-###REFACTORED         AWS_REGION=aws_defaults.get('region')
-###REFACTORED 
-###REFACTORED 
-###REFACTORED     try:
-###REFACTORED         AWS_ACCESS_KEY_ID
-###REFACTORED     except NameError:
-###REFACTORED             try:
-###REFACTORED                 AWS_ACCESS_KEY_ID=os.environ['AWSAccessKeyId']
-###REFACTORED                 AWS_SECRET_ACCESS_KEY=os.environ['AWSSecretKey']
-###REFACTORED                 AWS_REGION=os.environ['AWSRegion']
-###REFACTORED             except KeyError:
-###REFACTORED                 print "Please set env variable"
-###REFACTORED                 sys.exit(1)
-###REFACTORED 
-
     print '> Processing region: '+AWS_REGION
 
 

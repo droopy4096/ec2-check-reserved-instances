@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+import ConfigParser
+import argparse
 import sys
 import os
 import boto
@@ -66,30 +68,50 @@ class AWSLister(object):
 def main():
     region='us-west-2'
 
-    if len(sys.argv) > 1:
-        aws_config_file=sys.argv[1]
-        import ConfigParser
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--aws_config', help='AWS Config file');
+    parser.add_argument('--access_key', help='Access Key');
+    parser.add_argument('--secret_key', help='Secret Key');
+    parser.add_argument('--region', help='Region');
+    args = parser.parse_args()
+    if args.aws_config:
+        print "> Using config: ",args.aws_config
         cp=ConfigParser.ConfigParser()
-        cp.read(aws_config_file)
+        cp.read(os.path.expanduser(args.aws_config))
         aws_defaults=dict(cp.items('default'))
-        # print aws_defaults
         AWS_ACCESS_KEY_ID=aws_defaults.get('aws_access_key_id')
         AWS_SECRET_ACCESS_KEY=aws_defaults.get('aws_secret_access_key')
         AWS_REGION=aws_defaults.get('region')
+    else:
+        AWS_ACCESS_KEY_ID = args.access_key
+        AWS_SECRET_ACCESS_KEY = args.secret_key
+        AWS_REGION = args.region
+    
+###REFACTORED     if len(sys.argv) > 1:
+###REFACTORED         aws_config_file=sys.argv[1]
+###REFACTORED         import ConfigParser
+###REFACTORED         cp=ConfigParser.ConfigParser()
+###REFACTORED         cp.read(aws_config_file)
+###REFACTORED         aws_defaults=dict(cp.items('default'))
+###REFACTORED         # print aws_defaults
+###REFACTORED         AWS_ACCESS_KEY_ID=aws_defaults.get('aws_access_key_id')
+###REFACTORED         AWS_SECRET_ACCESS_KEY=aws_defaults.get('aws_secret_access_key')
+###REFACTORED         AWS_REGION=aws_defaults.get('region')
+###REFACTORED 
+###REFACTORED 
+###REFACTORED     try:
+###REFACTORED         AWS_ACCESS_KEY_ID
+###REFACTORED     except NameError:
+###REFACTORED             try:
+###REFACTORED                 AWS_ACCESS_KEY_ID=os.environ['AWSAccessKeyId']
+###REFACTORED                 AWS_SECRET_ACCESS_KEY=os.environ['AWSSecretKey']
+###REFACTORED                 AWS_REGION=os.environ['AWSRegion']
+###REFACTORED             except KeyError:
+###REFACTORED                 print "Please set env variable"
+###REFACTORED                 sys.exit(1)
+###REFACTORED 
 
-
-    try:
-        AWS_ACCESS_KEY_ID
-    except NameError:
-            try:
-                AWS_ACCESS_KEY_ID=os.environ['AWSAccessKeyId']
-                AWS_SECRET_ACCESS_KEY=os.environ['AWSSecretKey']
-                AWS_REGION=os.environ['AWSRegion']
-            except KeyError:
-                print "Please set env variable"
-                sys.exit(1)
-
-    print '>Processing region: '+AWS_REGION
+    print '> Processing region: '+AWS_REGION
 
 
     aws_lister=AWSLister(AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY,AWS_REGION)
@@ -98,7 +120,7 @@ def main():
     instance_diff=aws_lister.get_instance_diff(reserved_instances,running_instances)
 
     ## List instances:
-    print "\n>Instances:"
+    print "\n> Instances:"
     for instance in aws_lister.instances:
         print "===> ",instance.id, instance.instance_type, instance.placement, instance.state
         if instance.state != "running":
@@ -107,7 +129,7 @@ def main():
             sys.stderr.write("Disqualifying instance %s: spot\n" % ( instance.id ) )
 
     ## List reservations
-    print "\n>Reservations:"
+    print "\n> Reservations:"
     for reserved_instance in aws_lister.reserved_instances:
         if reserved_instance.state != "active":
             sys.stderr.write( "Excluding reserved instances %s: no longer active\n" % ( reserved_instance.id ) )

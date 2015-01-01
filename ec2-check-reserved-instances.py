@@ -95,12 +95,10 @@ for reserved_instance in ec2_conn.get_all_reserved_instances():
 # and negative number if an instance is on demand
 instance_diff = dict([(x, reserved_instances[x] - running_instances.get(x, 0 )) for x in reserved_instances.keys()])
 
-rev_diff={}
 # instance_diff only has the keys that were present in reserved_instances. There's probably a cooler way to add a filtered dict here
 for placement_key in running_instances:
     if not placement_key in reserved_instances:
         instance_diff[placement_key] = -running_instances[placement_key]
-        rev_diff[placement_key] = rev_diff.get(placement_key,0)
 
 ## pprint ( instance_diff )
 

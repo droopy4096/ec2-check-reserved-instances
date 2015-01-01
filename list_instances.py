@@ -30,14 +30,14 @@ def main():
     global access_key
     global secret_key
     if args.aws_config:
-	cp=ConfigParser.ConfigParser()
-	cp.read(args.aws_config)
-	aws_defaults=cp.defaults()
-	access_key=aws_defaults.get('aws_access_key_id')
-	secret_key=aws_defaults.get('aws_secret_access_key')
+        cp=ConfigParser.ConfigParser()
+        cp.read(args.aws_config)
+        aws_defaults=cp.defaults()
+        access_key=aws_defaults.get('aws_access_key_id')
+        secret_key=aws_defaults.get('aws_secret_access_key')
     else:
-    	access_key = args.access_key
-    	secret_key = args.secret_key
+        access_key = args.access_key
+        secret_key = args.secret_key
     
     for region in regions: get_ec2_instances(region)
  

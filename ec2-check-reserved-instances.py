@@ -89,7 +89,7 @@ def main():
                 print "Please set env variable"
                 sys.exit(1)
 
-    print 'Processing region: '+AWS_REGION
+    print '>Processing region: '+AWS_REGION
 
 
     aws_lister=AWSLister(AWS_ACCESS_KEY_ID,AWS_SECRET_ACCESS_KEY,AWS_REGION)
@@ -98,21 +98,23 @@ def main():
     instance_diff=aws_lister.get_instance_diff(reserved_instances,running_instances)
 
     ## List instances:
-    print "Instances:"
+    print "\n>Instances:"
     for instance in aws_lister.instances:
-        print "===> ",instance.id, instance.instance_type, instance.state, instance.placement
+        print "===> ",instance.id, instance.instance_type, instance.placement, instance.state
         if instance.state != "running":
             sys.stderr.write("Disqualifying instance %s: not running\n" % ( instance.id ) )
         elif instance.spot_instance_request_id:
             sys.stderr.write("Disqualifying instance %s: spot\n" % ( instance.id ) )
 
     ## List reservations
-    print "Reservations:"
+    print "\n>Reservations:"
     for reserved_instance in aws_lister.reserved_instances:
         if reserved_instance.state != "active":
             sys.stderr.write( "Excluding reserved instances %s: no longer active\n" % ( reserved_instance.id ) )
         else:
             print "---> ", reserved_instance.id, reserved_instance.instance_type, reserved_instance.availability_zone
+
+    print ""
 
     unused_reservations = dict((key,value) for key, value in instance_diff.iteritems() if value > 0)
     if unused_reservations == {}:
